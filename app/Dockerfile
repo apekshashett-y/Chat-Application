@@ -1,12 +1,18 @@
-# Use Maven to build the project
-FROM maven:3.8.5-openjdk-17 AS build
+# Use JDK 21 for building
+FROM eclipse-temurin:21-jdk AS build
+
 WORKDIR /app
 COPY . .
-RUN mvn clean package -DskipTests
 
-# Use JDK to run the JAR
-FROM openjdk:17
+RUN ./mvnw clean package -DskipTests
+
+# Use JDK 21 for running
+FROM eclipse-temurin:21-jdk
+
 WORKDIR /app
+
 COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
+
 ENTRYPOINT ["java", "-jar", "app.jar"]
